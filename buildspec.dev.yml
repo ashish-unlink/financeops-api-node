@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 370311568643.dkr.ecr.ap-southeast-1.amazonaws.com
+  build:
+    commands:
+      - docker build -t onfido .
+      - docker tag onfido:latest 370311568643.dkr.ecr.ap-southeast-1.amazonaws.com/onfido:latest
+  post_build:
+    commands:
+      - docker push 370311568643.dkr.ecr.ap-southeast-1.amazonaws.com/onfido:latest
+      - printf '[{"name":"onfido","imageUri":"%s"}]' 370311568643.dkr.ecr.ap-southeast-1.amazonaws.com/onfido:latest > onfido.json
+artifacts:
+  files: onfido.json
